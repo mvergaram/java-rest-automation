@@ -1,0 +1,25 @@
+# Build output
+target/
+build/
+out/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# Gradle local cache markers
+.gradle/
+
+# Local secrets — never commit real Twilio credentials
+.env
+
+# Personal, local-only Claude Code notes — not shared with the team
+CLAUDE.local.md
+
+# OS
+.DS_Store
+Thumbs.db

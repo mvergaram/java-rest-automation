@@ -1,0 +1,12 @@
+[
+  {
+    "id": "greeting-en",
+    "audioRef": "https://fixtures.example.com/audio/greeting-en.wav",
+    "expectedOperators": ["Conversation Summary"]
+  },
+  {
+    "id": "support-call-es",
+    "audioRef": "https://fixtures.example.com/audio/support-call-es.wav",
+    "expectedOperators": ["Conversation Summary", "PII Redaction"]
+  }
+]

@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REST Automation Frameworks Comparison Report — 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f2a4a;
+    --navy-dark: #0a1e36;
+    --blue: #1e5aa8;
+    --blue-light: #e8f0fa;
+    --gray-900: #1f2937;
+    --gray-700: #374151;
+    --gray-500: #6b7280;
+    --gray-300: #d1d5db;
+    --gray-100: #f3f4f6;
+    --gray-50: #f9fafb;
+    --white: #ffffff;
+    --red-bg: #fde2e1; --red-fg: #9b1c1c;
+    --yellow-bg: #fff3c4; --yellow-fg: #7a5a00;
+    --green-bg: #d9f2e3; --green-fg: #14532d;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(15,42,74,.08), 0 4px 16px rgba(15,42,74,.06);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin:0; font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; color:var(--gray-900); background:var(--gray-50); line-height:1.6; font-size:16px; }
+  a { color:var(--blue); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+
+  header.hero { background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 60%,var(--blue) 100%); color:#fff; padding:72px 24px 64px; }
+  .hero-inner { max-width:1180px; margin:0 auto; }
+  .hero .badge { display:inline-block; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.28); padding:4px 12px; border-radius:999px; font-size:13px; font-weight:500; letter-spacing:.02em; margin-bottom:18px; }
+  .hero h1 { font-size:clamp(28px,4vw,44px); font-weight:800; margin:0 0 12px; line-height:1.15; }
+  .hero p.subtitle { font-size:clamp(15px,2vw,19px); margin:0 0 20px; color:rgba(255,255,255,.86); max-width:820px; }
+  .hero .meta { display:flex; flex-wrap:wrap; gap:20px; font-size:14px; color:rgba(255,255,255,.78); }
+  .hero .meta span strong { color:#fff; font-weight:600; }
+
+  nav.toc { background:#fff; border-bottom:1px solid var(--gray-300); position:sticky; top:0; z-index:20; }
+  nav.toc ul { max-width:1180px; margin:0 auto; padding:0 24px; list-style:none; display:flex; gap:4px; overflow-x:auto; }
+  nav.toc li a { display:block; padding:14px; font-size:14px; font-weight:500; color:var(--gray-700); white-space:nowrap; border-bottom:3px solid transparent; }
+  nav.toc li a:hover { color:var(--blue); border-bottom-color:var(--blue); text-decoration:none; }
+
+  main { max-width:1180px; margin:0 auto; padding:48px 24px 80px; }
+  section { margin-bottom:64px; }
+  h2 { font-size:28px; font-weight:700; color:var(--navy); margin:0 0 8px; padding-bottom:10px; border-bottom:3px solid var(--blue); display:inline-block; }
+  .section-lead { color:var(--gray-500); margin:8px 0 28px; font-size:15px; }
+  h3 { font-size:20px; font-weight:700; color:var(--navy); margin:40px 0 12px; }
+  h4 { font-size:14px; font-weight:600; color:var(--gray-700); margin:18px 0 8px; text-transform:uppercase; letter-spacing:.04em; }
+  p { margin:0 0 14px; }
+
+  .card { background:#fff; border:1px solid var(--gray-300); border-radius:var(--radius); padding:28px; box-shadow:var(--shadow); }
+
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin:28px 0 8px; }
+  .kpi { background:var(--blue-light); border-left:4px solid var(--blue); border-radius:8px; padding:16px 18px; }
+  .kpi .label { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--gray-500); font-weight:600; }
+  .kpi .value { font-size:19px; font-weight:700; color:var(--navy); margin-top:4px; }
+  .kpi .sub { font-size:13px; color:var(--gray-700); }
+
+  .legend { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:16px; font-size:13px; }
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+  .legend i { display:inline-block; width:16px; height:16px; border-radius:4px; }
+
+  .table-wrap { overflow-x:auto; border-radius:var(--radius); border:1px solid var(--gray-300); box-shadow:var(--shadow); background:#fff; }
+  table.matrix { width:100%; border-collapse:collapse; min-width:900px; font-size:14px; }
+  table.matrix thead th { background:var(--navy); color:#fff; font-weight:600; text-align:center; padding:14px 10px; position:sticky; top:0; font-size:13px; }
+  table.matrix thead th:first-child, table.matrix tbody td:first-child { text-align:left; }
+  table.matrix tbody td { padding:10px; border-top:1px solid var(--gray-100); text-align:center; }
+  table.matrix tbody td:first-child { font-weight:600; color:var(--gray-900); }
+  table.matrix tbody td:first-child small { display:block; font-weight:400; color:var(--gray-500); font-size:12px; }
+  table.matrix tr.eco th { background:var(--blue-light); color:var(--navy); text-align:left; padding:8px 10px; font-size:12px; text-transform:uppercase; letter-spacing:.08em; font-weight:700; }
+  .score { display:inline-block; min-width:36px; padding:4px 8px; border-radius:6px; font-weight:700; }
+  .s1,.s2 { background:var(--red-bg); color:var(--red-fg); }
+  .s3 { background:var(--yellow-bg); color:var(--yellow-fg); }
+  .s4,.s5 { background:var(--green-bg); color:var(--green-fg); }
+  td.total { font-weight:700; color:var(--navy); }
+  .total-bar { display:inline-block; height:8px; background:var(--blue); border-radius:4px; vertical-align:middle; margin-left:8px; }
+
+  .criteria { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin:20px 0 32px; }
+  .criteria .crit { background:#fff; border:1px solid var(--gray-300); border-radius:8px; padding:14px 16px; font-size:14px; }
+  .criteria .crit strong { display:block; color:var(--navy); margin-bottom:4px; }
+
+  .fw { margin-bottom:36px; }
+  .fw-head { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:12px; }
+  .fw-head h3 { margin:0; }
+  .fw-head .tags { display:flex; gap:6px; flex-wrap:wrap; }
+  .tag { font-size:12px; font-weight:600; padding:3px 10px; border-radius:999px; background:var(--blue-light); color:var(--navy); }
+  .tag.lang { background:var(--navy); color:#fff; }
+  .scoreline { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 18px; font-size:13px; }
+  .scoreline span { background:var(--gray-100); padding:4px 10px; border-radius:6px; color:var(--gray-700); }
+  .scoreline span b { color:var(--navy); }
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  ul.pros, ul.cons { margin:0; padding-left:20px; font-size:15px; }
+  ul.pros li::marker { color:#15803d; }
+  ul.cons li::marker { color:#b91c1c; }
+  ul.pros li, ul.cons li { margin-bottom:6px; }
+
+  pre { background:#0b1a2e; color:#e6edf3; border-radius:8px; padding:18px 20px; overflow-x:auto; font-size:13px; line-height:1.55; margin:8px 0 12px; border:1px solid #1c3555; }
+  code { font-family:'JetBrains Mono','Fira Code',Consolas,'Courier New',monospace; }
+  pre code { display:block; }
+  .cmd { background:var(--gray-100); border-left:4px solid var(--blue); padding:10px 14px; border-radius:6px; font-size:13px; margin:8px 0; overflow-x:auto; }
+  .cmd code { color:var(--navy); }
+
+  .callout { background:var(--blue-light); border-left:4px solid var(--blue); padding:16px 20px; border-radius:8px; margin:20px 0; font-size:15px; }
+
+  .reco-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:20px; }
+  .reco { background:#fff; border:1px solid var(--gray-300); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); border-top:5px solid var(--blue); }
+  .reco h3 { margin:0 0 10px; font-size:18px; }
+  .reco .pick { font-weight:700; color:var(--navy); background:var(--blue-light); padding:8px 12px; border-radius:6px; display:inline-block; margin-bottom:12px; font-size:14px; }
+  .reco ul { margin:0; padding-left:18px; font-size:14.5px; }
+  .reco li { margin-bottom:6px; }
+
+  footer { background:var(--navy-dark); color:rgba(255,255,255,.78); padding:36px 24px; font-size:14px; }
+  .footer-inner { max-width:1180px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:space-between; gap:16px; }
+  footer strong { color:#fff; }
+
+  @media (max-width:760px) {
+    .two-col { grid-template-columns:1fr; }
+    .card { padding:20px; }
+    header.hero { padding:48px 20px 40px; }
+    main { padding:32px 16px 60px; }
+  }
+  @media print {
+    nav.toc { display:none; }
+    body { background:#fff; }
+    pre { white-space:pre-wrap; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="badge">Technical Report · QA Automation</div>
+    <h1>REST Test Automation Frameworks Comparison</h1>
+    <p class="subtitle">Evaluation of 15 frameworks across five ecosystems (JVM, JavaScript/TypeScript, Python, .NET and Ruby) based on CI/CD compatibility, maintainability, object-oriented design, learning curve, and base technologies.</p>
+    <div class="meta">
+      <span><strong>Date:</strong> 2026-09-08</span>
+      <span><strong>Version:</strong> 1.0</span>
+      <span><strong>Scope:</strong> functional and contract testing over REST/HTTP endpoints</span>
+      <span><strong>Scale:</strong> 1 (poor) – 5 (excellent)</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <ul>
+    <li><a href="#summary">Executive Summary</a></li>
+    <li><a href="#criteria">Criteria</a></li>
+    <li><a href="#matrix">Comparison Table</a></li>
+    <li><a href="#jvm">JVM / Java</a></li>
+    <li><a href="#js">JavaScript / TypeScript</a></li>
+    <li><a href="#python">Python</a></li>
+    <li><a href="#dotnet">C# / .NET</a></li>
+    <li><a href="#ruby">Ruby</a></li>
+    <li><a href="#recommendation">Recommendation</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- EXECUTIVE SUMMARY -->
+<section id="summary">
+  <h2>1. Executive Summary</h2>
+  <p class="section-lead">Key findings and main conclusions.</p>
+  <div class="card">
+    <p>The REST test automation market has converged around two models: <strong>assertion libraries integrated into the language's native runner</strong> (REST Assured, Pytest + Requests, Playwright API, RestSharp, SuperTest) and <strong>high-level platforms oriented toward collaboration</strong> (Karate DSL, Postman/Newman, Robot Framework, Cucumber/SpecFlow). The former excel in maintainability, object-oriented design, and ability to scale large suites; the latter lower the barrier of entry for non-programmer profiles and bring tests closer to business language, at the cost of reduced structural expressiveness and greater friction as the suite grows.</p>
+    <p>In the JVM ecosystem, <strong>REST Assured</strong> remains the de facto standard (23/25) due to its seamless integration with Maven/Gradle, JUnit 5 and TestNG, and its natural support for OO patterns such as Builder, Factory, and Specification. <strong>Karate DSL</strong> is the most productive alternative when prioritizing authoring speed and declarative JSON assertions. Outside the JVM, <strong>Pytest + Requests/httpx</strong> achieves the highest overall score (24/25) thanks to its composable fixture model and mature ecosystem; in JavaScript, <strong>Playwright</strong> has consolidated itself as the most complete option by unifying API and UI tests under a single runner with built-in parallelism and traces.</p>
+    <p>Cross-cutting recommendation: choose the framework aligned with the <strong>team's primary language</strong>, as API tests live best alongside the code they validate and benefit from the same pipeline, tooling, and code review process. Reserve Postman/Newman for exploration and documentation, and consider Karate DSL or Robot Framework only when non-programmer QA profiles need to write test cases without development assistance.</p>
+    <div class="kpis">
+      <div class="kpi"><div class="label">Highest Overall Score</div><div class="value">Pytest + Requests/httpx</div><div class="sub">24 / 25 points</div></div>
+      <div class="kpi"><div class="label">JVM Standard</div><div class="value">REST Assured</div><div class="sub">23 / 25 points</div></div>
+      <div class="kpi"><div class="label">Best API + UI Unification</div><div class="value">Playwright</div><div class="sub">22 / 25 points</div></div>
+      <div class="kpi"><div class="label">Lowest Learning Curve</div><div class="value">Karate DSL / Postman</div><div class="sub">Productive within hours</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CRITERIA -->
+<section id="criteria">
+  <h2>2. Evaluation Criteria</h2>
+  <p class="section-lead">Each framework is scored 1 to 5 on five axes. Maximum total: 25.</p>
+  <div class="criteria">
+    <div class="crit"><strong>1. CI/CD Compatibility</strong>Native integration with Maven, Gradle, npm, pip, dotnet CLI, Bundler; JUnit XML reports and headless execution in GitHub Actions, Jenkins and GitLab CI.</div>
+    <div class="crit"><strong>2. Maintainability</strong>Readability, modularization, test data management, parameterization, and ability to refactor suites of hundreds of cases without degradation.</div>
+    <div class="crit"><strong>3. Object-Oriented Design</strong>Support for Service/Page Object, Builder, Factory, Strategy patterns; fixture inheritance and composition; typing that enables IDE-assisted refactoring.</div>
+    <div class="crit"><strong>4. Learning Curve</strong>Time for a developer to become productive, documentation quality, community size and activity, availability of examples.</div>
+    <div class="crit"><strong>5. Base Technologies</strong>Dependencies, minimum runtime version, ecosystem maturity (mocks, contract testing, reporting), license, and maintenance health.</div>
+  </div>
+</section>
+
+<!-- MATRIX -->
+<section id="matrix">
+  <h2>3. Comparison Table</h2>
+  <p class="section-lead">Framework × criterion matrix with heatmap color coding.</p>
+  <div class="legend">
+    <span><i style="background:var(--red-bg);border:1px solid #f0b4b2"></i> 1–2: Poor / limited</span>
+    <span><i style="background:var(--yellow-bg);border:1px solid #f1dd8a"></i> 3: Acceptable</span>
+    <span><i style="background:var(--green-bg);border:1px solid #a8dcbb"></i> 4–5: Good / excellent</span>
+  </div>
+  <div class="table-wrap">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th>Framework</th>
+          <th>CI/CD</th>
+          <th>Maintainability</th>
+          <th>OO Design</th>
+          <th>Learning Curve</th>
+          <th>Base Technologies</th>
+          <th>Total /25</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="eco"><th colspan="7">JVM / Java</th></tr>
+        <tr><td>REST Assured<small>Java · JUnit 5 / TestNG</small></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td><span class="score s5">5</span></td><td class="total">23<span class="total-bar" style="width:92px"></span></td></tr>
+        <tr><td>Karate DSL<small>Gherkin-like DSL on JVM</small></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td><span class="score s2">2</span></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td class="total">20<span class="total-bar" style="width:80px"></span></td></tr>
+        <tr><td>Serenity BDD + REST Assured<small>Java · Screenplay / BDD</small></td><td><span class="score s5">5</span></td><td><span class="score s5">5</span></td><td><span class="score s5">5</span></td><td><span class="score s3">3</span></td><td><span class="score s4">4</span></td><td class="total">22<span class="total-bar" style="width:88px"></span></td></tr>
+        <tr><td>Spring Boot Test<small>MockMvc / WebTestClient</small></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td><span class="score s4">4</span></td><td><span class="score s3">3</span></td><td><span class="score s4">4</span></td><td class="total">20<span class="total-bar" style="width:80px"></span></td></tr>
+        <tr><td>Cucumber + REST Assured<small>Gherkin + Java step definitions</small></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td><span class="score s4">4</span></td><td><span class="score s3">3</span></td><td><span class="score s4">4</span></td><td class="total">20<span class="total-bar" style="width:80px"></span></td></tr>
+
+        <tr class="eco"><th colspan="7">JavaScript / TypeScript</th></tr>
+        <tr><td>Postman / Newman<small>JSON Collections + CLI</small></td><td><span class="score s4">4</span></td><td><span class="score s2">2</span></td><td><span class="score s1">1</span></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td class="total">16<span class="total-bar" style="width:64px"></span></td></tr>
+        <tr><td>Playwright (API testing)<small>TypeScript · @playwright/test</small></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td><span class="score s4">4</span></td><td><span class="score s4">4</span></td><td><span class="score s5">5</span></td><td class="total">22<span class="total-bar" style="width:88px"></span></td></tr>
+        <tr><td>Cypress (API mode)<small>cy.request / cy.api</small></td><td><span class="score s4">4</span></td><td><span class="score s3">3</span></td><td><span class="score s2">2</span></td><td><span class="score s4">4</span></td><td><span class="score s3">3</span></td><td class="total">16<span class="total-bar" style="width:64px"></span></td></tr>
+        <tr><td>SuperTest<small>Node.js · Jest / Mocha</small></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td><span class="score s3">3</span></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td class="total">21<span class="total-bar" style="width:84px"></span></td></tr>
+        <tr><td>Jest + Axios<small>Node.js · TypeScript optional</small></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td><span class="score s3">3</span></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td class="total">21<span class="total-bar" style="width:84px"></span></td></tr>
+
+        <tr class="eco"><th colspan="7">Python</th></tr>
+        <tr><td>Pytest + Requests / httpx<small>Python 3.9+</small></td><td><span class="score s5">5</span></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td><span class="score s5">5</span></td><td><span class="score s5">5</span></td><td class="total">24<span class="total-bar" style="width:96px"></span></td></tr>
+        <tr><td>Robot Framework + RequestsLibrary<small>Keyword-driven</small></td><td><span class="score s4">4</span></td><td><span class="score s3">3</span></td><td><span class="score s2">2</span></td><td><span class="score s4">4</span></td><td><span class="score s3">3</span></td><td class="total">16<span class="total-bar" style="width:64px"></span></td></tr>
+
+        <tr class="eco"><th colspan="7">C# / .NET</th></tr>
+        <tr><td>RestSharp<small>C# · xUnit / NUnit / MSTest</small></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td><span class="score s5">5</span></td><td><span class="score s4">4</span></td><td><span class="score s4">4</span></td><td class="total">22<span class="total-bar" style="width:88px"></span></td></tr>
+        <tr><td>SpecFlow + RestSharp<small>Gherkin + C# · successor: Reqnroll</small></td><td><span class="score s4">4</span></td><td><span class="score s4">4</span></td><td><span class="score s4">4</span></td><td><span class="score s3">3</span></td><td><span class="score s3">3</span></td><td class="total">18<span class="total-bar" style="width:72px"></span></td></tr>
+
+        <tr class="eco"><th colspan="7">Ruby</th></tr>
+        <tr><td>RSpec + Faraday / HTTParty<small>Ruby 3.x · Bundler</small></td><td><span class="score s4">4</span></td><td><span class="score s4">4</span></td><td><span class="score s4">4</span></td><td><span class="score s4">4</span></td><td><span class="score s3">3</span></td><td class="total">19<span class="total-bar" style="width:76px"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">
+    <strong>Reading the matrix.</strong> Frameworks that expose a full programming language (REST Assured, Pytest, Playwright, RestSharp) dominate in object-oriented design and maintainability. DSL/keyword frameworks (Karate, Postman, Robot, Cypress in API mode) score high on learning curve but low on OO, given that their extension model is not designed for class hierarchies or IDE-assisted refactoring.
+  </div>
+</section>
+
+<!-- JVM -->
+<section id="jvm">
+  <h2>4. Detail — JVM / Java</h2>
+  <p class="section-lead">The most mature ecosystem for build tools (Maven, Gradle) and reporting (Surefire, Allure, Serenity).</p>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>4.1 REST Assured</h3>
+      <div class="tags"><span class="tag lang">Java / Kotlin / Groovy</span><span class="tag">Apache 2.0</span><span class="tag">Java 8+ (recom. 17+)</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>5</b></span><span>Maintainability <b>4</b></span><span>OO <b>5</b></span><span>Learning <b>4</b></span><span>Technologies <b>5</b></span><span>Total <b>23</b></span></div>
+    <p>Fluent DSL library (given/when/then) for REST service testing on the JVM. It is not a runner: it combines with JUnit 5 or TestNG and runs like any unit test, providing full integration with Maven Surefire/Failsafe and Gradle Test. Includes JSON Schema validation, JsonPath/GPath, OAuth2/Basic/Digest authentication, logging filters, and reusable <code>RequestSpecification</code>/<code>ResponseSpecification</code>.</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>De facto JVM standard; very broad knowledge base.</li>
+        <li>Reusable Specifications enable Builder and Factory patterns idiomatically.</li>
+        <li>Integrates with Hamcrest, AssertJ, Jackson/Gson, Allure, and Spring.</li>
+        <li>Supports multipart, cookies, proxies, relaxed SSL, and custom filters.</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>GPath in strings is untyped: path errors are detected at runtime.</li>
+        <li>No own runner; parallelism and reporting depend on JUnit/TestNG.</li>
+        <li>Moderate initial curve to master Hamcrest matchers and GPath.</li>
+        <li>Verbosity compared to declarative DSLs like Karate.</li>
+      </ul></div>
+    </div>
+    <h4>Example — Simple GET (JUnit 5)</h4>
+<pre><code>import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+class UserApiTest {
+    @BeforeAll
+    static void setup() {
+        RestAssured.baseURI = "https://api.example.com";
+        RestAssured.basePath = "/v1";
+    }
+
+    @Test
+    void shouldReturnUserById() {
+        given()
+            .accept(ContentType.JSON)
+            .pathParam("id", 42)
+        .when()
+            .get("/users/{id}")
+        .then()
+            .statusCode(200)
+            .contentType(ContentType.JSON)
+            .body("id", equalTo(42))
+            .body("email", containsString("@"))
+            .time(lessThan(1500L));
+    }
+}</code></pre>
+    <h4>Execution</h4>
+    <div class="cmd"><code>mvn -q test -Dtest=UserApiTest</code></div>
+    <div class="cmd"><code>gradle test --tests "UserApiTest"</code></div>
+  </div>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>4.2 Karate DSL</h3>
+      <div class="tags"><span class="tag lang">DSL (Gherkin-like) · JVM</span><span class="tag">MIT</span><span class="tag">Java 11+ / 17+</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>5</b></span><span>Maintainability <b>4</b></span><span>OO <b>2</b></span><span>Learning <b>5</b></span><span>Technologies <b>4</b></span><span>Total <b>20</b></span></div>
+    <p>All-in-one framework that unifies API testing, mocks, performance (Gatling) and UI under its own DSL based on Gherkin syntax. No step definitions required: the engine directly interprets <code>Given url</code>, <code>When method get</code>, <code>Then status 200</code> and <code>match</code>. Runs as a JUnit 5 test and generates its own HTML reports with full request/response details.</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>Very fast to write; <code>match</code> with fuzzy markers (<code>#string</code>, <code>#uuid</code>) is highly expressive.</li>
+        <li>No glue code: no step definitions to maintain.</li>
+        <li>Native scenario-level parallelism and detailed HTML reports.</li>
+        <li>API mocks/stubs and data-driven testing with external JSON/CSV.</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>Untyped DSL; no IDE-assisted refactoring or real OO patterns.</li>
+        <li>Complex logic ends up as embedded JavaScript that is hard to test.</li>
+        <li>Inferior IDE support compared to pure Java; less ergonomic debugging.</li>
+        <li>Strong dependency on a single main maintainer.</li>
+      </ul></div>
+    </div>
+    <h4>Example — Simple GET (users.feature)</h4>
+<pre><code>Feature: Users API
+
+  Background:
+    * url baseUrl
+    * header Accept = 'application/json'
+
+  Scenario: Get user by id
+    Given path 'users', 42
+    When method get
+    Then status 200
+    And match response == { id: 42, name: '#string', email: '#regex .+@.+' }
+    And match responseTime &lt; 1500</code></pre>
+    <h4>Execution</h4>
+    <div class="cmd"><code>mvn test -Dkarate.env=qa -Dkarate.options="--tags ~@ignore"</code></div>
+    <div class="cmd"><code>gradle test -Dkarate.env=qa</code></div>
+  </div>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>4.3 Serenity BDD + REST Assured</h3>
+      <div class="tags"><span class="tag lang">Java</span><span class="tag">Apache 2.0</span><span class="tag">Java 17+</span><span class="tag">Screenplay Pattern</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>5</b></span><span>Maintainability <b>5</b></span><span>OO <b>5</b></span><span>Learning <b>3</b></span><span>Technologies <b>4</b></span><span>Total <b>22</b></span></div>
+    <p>Serenity wraps REST Assured (<code>serenity-rest-assured</code>) adding living-documentation reports, grouping by requirements/features, and the Screenplay pattern (Actor, Task, Interaction, Question), which enforces a highly modular test architecture. Compatible with JUnit 5 and Cucumber.</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>Best reporting on the market: narrative, request/response captures, coverage by requirement.</li>
+        <li>Screenplay favors SOLID: reusable Tasks, typed Questions.</li>
+        <li>Integrates Cucumber, JUnit 5, Selenium/Appium in a single report.</li>
+        <li>Environment-based configuration (serenity.conf HOCON) and parallel execution.</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>Steep learning curve: Screenplay demands conceptual discipline.</li>
+        <li>Startup overhead and dependencies; slower builds.</li>
+        <li>Over-engineered for small suites.</li>
+        <li>Coupled versioning between Serenity, Cucumber, and JUnit can cause conflicts.</li>
+      </ul></div>
+    </div>
+    <h4>Execution</h4>
+    <div class="cmd"><code>mvn clean verify serenity:aggregate</code></div>
+    <div class="cmd"><code>gradle clean test aggregate</code></div>
+  </div>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>4.4 Spring Boot Test (MockMvc / WebTestClient)</h3>
+      <div class="tags"><span class="tag lang">Java / Kotlin</span><span class="tag">Apache 2.0</span><span class="tag">Spring Boot 3.x · Java 17+</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>5</b></span><span>Maintainability <b>4</b></span><span>OO <b>4</b></span><span>Learning <b>3</b></span><span>Technologies <b>4</b></span><span>Total <b>20</b></span></div>
+    <p>Testing tools built into Spring Boot for verifying REST controllers without deploying a real server (MockMvc, <code>@WebMvcTest</code>) or against an embedded server with a random port (WebTestClient, <code>@SpringBootTest(webEnvironment=RANDOM_PORT)</code>). Ideal for in-process tests with access to the Spring context, mocked beans, and Testcontainers.</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>No external server: fast and deterministic execution in CI.</li>
+        <li>Full context access (mocks with @MockitoBean, profiles, properties).</li>
+        <li>WebTestClient supports MVC and WebFlux with the same fluent API.</li>
+        <li>Combines with Spring Cloud Contract and Testcontainers.</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>Only applicable to Spring services; not suitable for external black-box testing.</li>
+        <li>Requires understanding the Spring context lifecycle (slices, caching).</li>
+        <li>MockMvc bypasses the real network layer (servlet container filters, TLS).</li>
+        <li>Context startup time in large @SpringBootTest suites.</li>
+      </ul></div>
+    </div>
+    <h4>Execution</h4>
+    <div class="cmd"><code>mvn verify   # Failsafe runs *IT.java</code></div>
+    <div class="cmd"><code>gradle integrationTest</code></div>
+  </div>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>4.5 Cucumber + REST Assured</h3>
+      <div class="tags"><span class="tag lang">Gherkin + Java</span><span class="tag">MIT</span><span class="tag">Cucumber-JVM 7.x · Java 17+</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>5</b></span><span>Maintainability <b>4</b></span><span>OO <b>4</b></span><span>Learning <b>3</b></span><span>Technologies <b>4</b></span><span>Total <b>20</b></span></div>
+    <p>Classic BDD combination: business-readable Gherkin scenarios and Java step definitions that delegate to REST Assured. Allows separating intent (feature) from implementation (steps + service objects), with dependency injection via PicoContainer or Spring.</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>Scenarios readable by product and business teams; living documentation.</li>
+        <li>Step definitions in pure Java: all OO patterns apply.</li>
+        <li>Mature ecosystem: Cucumber Reports, Allure, JUnit Platform Engine.</li>
+        <li>Data tables and Scenario Outline for parameterized cases.</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>Dual maintenance (feature + glue); risk of ambiguous or duplicate steps.</li>
+        <li>Without discipline, features degrade into unreadable technical scripts.</li>
+        <li>Sharing state between steps requires DI and adds complexity.</li>
+        <li>Learning curve for teams without prior BDD culture.</li>
+      </ul></div>
+    </div>
+    <h4>Execution</h4>
+    <div class="cmd"><code>mvn test -Dcucumber.filter.tags="@smoke" -Dcucumber.plugin="pretty,json:target/cucumber.json"</code></div>
+    <div class="cmd"><code>gradle test -Dcucumber.filter.tags="@smoke"</code></div>
+  </div>
+</section>
+
+<!-- JS -->
+<section id="js">
+  <h2>5. Detail — JavaScript / TypeScript</h2>
+  <p class="section-lead">npm ecosystem; execution via <code>npm test</code>/<code>npx</code> and JUnit XML reports for any CI.</p>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>5.1 Postman / Newman</h3>
+      <div class="tags"><span class="tag lang">JavaScript (sandbox)</span><span class="tag">Newman: Apache 2.0 · App: proprietary</span><span class="tag">Node 16+</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>4</b></span><span>Maintainability <b>2</b></span><span>OO <b>1</b></span><span>Learning <b>5</b></span><span>Technologies <b>4</b></span><span>Total <b>16</b></span></div>
+    <p>The most widely used GUI tool for API exploration; its collections include test scripts in JavaScript (<code>pm.test</code>, <code>pm.expect</code>) that Newman (open source CLI) executes in pipelines. Collections and environments are versioned as exported JSON.</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>Near-zero learning curve; ideal for manual QA transitioning to automation.</li>
+        <li>Excellent for exploration, documentation, and sharing with non-technical teams.</li>
+        <li>Newman generates HTML/JUnit reports and integrates into any CI with Node.</li>
+        <li>Mock servers, monitors, and environment/collection variables.</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>No OO support: scripts isolated per request, no modules or typing, no imports.</li>
+        <li>Collection JSON is hard to review in PRs and prone to merge conflicts.</li>
+        <li>Scales poorly: duplicated logic, no IDE-assisted refactoring.</li>
+        <li>Advanced features require a paid plan.</li>
+      </ul></div>
+    </div>
+    <h4>Example — POST-response script</h4>
+<pre><code>// "Scripts > Post-response" tab for GET {{baseUrl}}/users/42
+pm.test("Status code is 200", () => {
+    pm.response.to.have.status(200);
+});
+pm.test("Response has user data", () => {
+    const body = pm.response.json();
+    pm.expect(body.id).to.eql(42);
+    pm.expect(body.email).to.include("@");
+});</code></pre>
+    <h4>Execution</h4>
+    <div class="cmd"><code>npx newman run users.postman_collection.json -e qa.postman_environment.json -r cli,junit,htmlextra</code></div>
+  </div>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>5.2 Playwright (API testing)</h3>
+      <div class="tags"><span class="tag lang">TypeScript / JavaScript</span><span class="tag">Apache 2.0</span><span class="tag">Node 18+</span><span class="tag">Microsoft</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>5</b></span><span>Maintainability <b>4</b></span><span>OO <b>4</b></span><span>Learning <b>4</b></span><span>Technologies <b>5</b></span><span>Total <b>22</b></span></div>
+    <p>Although known for UI E2E testing, <code>@playwright/test</code> includes the <code>request</code> fixture (<code>APIRequestContext</code>) for pure API testing without a browser. It provides its own runner with worker-level parallelism, retries, multi-environment projects, typed extensible fixtures, traces, and HTML reports.</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>Single runner for API + UI; reuses auth state between both.</li>
+        <li>Typed fixtures with <code>test.extend</code> enable Service Objects in TypeScript.</li>
+        <li>Native parallelism, sharding, and HTML/JUnit/Blob reports.</li>
+        <li>Actively maintained by Microsoft; excellent documentation.</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>Installs browsers by default (avoidable with selective configuration).</li>
+        <li>Fewer API-specific utilities (JSON Schema) than REST Assured; requires ajv/zod.</li>
+        <li>For API-only projects it may feel like a heavy dependency.</li>
+      </ul></div>
+    </div>
+    <h4>Example — Simple GET (TypeScript)</h4>
+<pre><code>// tests/api/users.spec.ts
+import { test, expect } from '@playwright/test';
+
+test('GET /users/:id returns the user', async ({ request }) => {
+    const response = await request.get('/v1/users/42', {
+        headers: { Accept: 'application/json' },
+    });
+    expect(response.status()).toBe(200);
+    const body = await response.json();
+    expect(body).toMatchObject({ id: 42 });
+    expect(body.email).toContain('@');
+});</code></pre>
+    <h4>Execution</h4>
+    <div class="cmd"><code>npx playwright test tests/api --project=api --reporter=html,junit</code></div>
+    <div class="cmd"><code>npm test   # "test": "playwright test"</code></div>
+  </div>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>5.3 Cypress (API mode)</h3>
+      <div class="tags"><span class="tag lang">JavaScript / TypeScript</span><span class="tag">MIT</span><span class="tag">Node 18+</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>4</b></span><span>Maintainability <b>3</b></span><span>OO <b>2</b></span><span>Learning <b>4</b></span><span>Technologies <b>3</b></span><span>Total <b>16</b></span></div>
+    <p>Cypress allows API testing via <code>cy.request()</code> and the <code>cypress-plugin-api</code> plugin. It is useful for teams already using Cypress for UI that want to add API smoke tests without another tool, but its command-chaining architecture is not designed for API testing at scale.</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>Reuse of configuration and auth if Cypress is already used for UI.</li>
+        <li>Interactive response visualization with cypress-plugin-api.</li>
+        <li>User-friendly documentation and large community.</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>Chained command model makes OO helpers and conditional logic difficult.</li>
+        <li>Launches a browser even for API tests: slow and heavy in CI.</li>
+        <li>Native parallelism requires Cypress Cloud (paid).</li>
+        <li>Global custom commands lack strong typing by default.</li>
+      </ul></div>
+    </div>
+    <h4>Execution</h4>
+    <div class="cmd"><code>npx cypress run --spec "cypress/e2e/api/**" --env apiBaseUrl=https://api.example.com --reporter junit</code></div>
+  </div>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>5.4 SuperTest</h3>
+      <div class="tags"><span class="tag lang">JavaScript / TypeScript</span><span class="tag">MIT</span><span class="tag">Node 18+</span><span class="tag">Jest / Mocha / Vitest</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>5</b></span><span>Maintainability <b>4</b></span><span>OO <b>3</b></span><span>Learning <b>5</b></span><span>Technologies <b>4</b></span><span>Total <b>21</b></span></div>
+    <p>HTTP assertion library built on SuperAgent. Its distinctive feature is accepting a server instance directly — Express/Koa/Fastify/NestJS (<code>request(app)</code>) — spinning it up on an ephemeral port without deployment, making it the standard for in-process integration testing in Node.js.</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>In-process integration with any Node HTTP framework; very fast in CI.</li>
+        <li>Minimal and fluent API; productive within minutes.</li>
+        <li>Runner-agnostic: Jest, Mocha, Vitest, node:test.</li>
+        <li>TypeScript types available (@types/supertest).</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>No high-level utilities (schemas, auth flows); must be built manually.</li>
+        <li>OO depends on team design; the library itself is functional.</li>
+        <li>Community maintenance has been intermittent in the past.</li>
+      </ul></div>
+    </div>
+    <h4>Example — Simple GET (Jest + TypeScript)</h4>
+<pre><code>import request from 'supertest';
+import { app } from '../src/app';
+
+describe('GET /v1/users/:id', () => {
+    it('returns the user as JSON', async () => {
+        const res = await request(app)
+            .get('/v1/users/42')
+            .set('Accept', 'application/json')
+            .expect(200)
+            .expect('Content-Type', /json/);
+        expect(res.body).toMatchObject({ id: 42 });
+        expect(res.body.email).toContain('@');
+    });
+});</code></pre>
+    <h4>Execution</h4>
+    <div class="cmd"><code>npx jest test/users.api.test.ts --ci --reporters=default --reporters=jest-junit</code></div>
+  </div>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>5.5 Jest + Axios</h3>
+      <div class="tags"><span class="tag lang">JavaScript / TypeScript</span><span class="tag">MIT</span><span class="tag">Node 18+</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>5</b></span><span>Maintainability <b>4</b></span><span>OO <b>3</b></span><span>Learning <b>5</b></span><span>Technologies <b>4</b></span><span>Total <b>21</b></span></div>
+    <p>A "do it yourself" combination of JavaScript's most popular runner with the most widely used HTTP client. No specific DSL: tests are ordinary TypeScript code, offering full freedom to build typed clients, interceptors, retries and data factories. Vitest is a drop-in replacement with the same API.</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>Maximum flexibility; the team controls the architecture entirely.</li>
+        <li>Axios: interceptors, configured instances (Builder pattern), typed responses.</li>
+        <li>Jest: snapshots, mocks, test.each for data-driven, built-in coverage.</li>
+        <li>Near-zero curve for any JS developer.</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>No conventions: each team reinvents helpers, reporting, and schema validation.</li>
+        <li>Requires discipline to avoid ending up with duplicated procedural tests.</li>
+        <li>TS/ESM configuration in Jest remains a source of friction.</li>
+      </ul></div>
+    </div>
+    <h4>Example — Simple GET (TypeScript with typed client)</h4>
+<pre><code>import axios, { AxiosInstance } from 'axios';
+
+interface User { id: number; name: string; email: string; }
+
+class UsersClient {
+    constructor(private readonly http: AxiosInstance) {}
+    getById(id: number) { return this.http.get&lt;User&gt;(`/users/${id}`); }
+}
+
+const http = axios.create({
+    baseURL: process.env.API_BASE_URL ?? 'https://api.example.com/v1',
+    headers: { Accept: 'application/json' },
+    timeout: 5000,
+    validateStatus: () => true,
+});
+const users = new UsersClient(http);
+
+describe('GET /users/:id', () => {
+    it('returns the user', async () => {
+        const res = await users.getById(42);
+        expect(res.status).toBe(200);
+        expect(res.data).toMatchObject({ id: 42 });
+        expect(res.data.email).toContain('@');
+    });
+});</code></pre>
+    <h4>Execution</h4>
+    <div class="cmd"><code>npx jest --ci --runInBand --reporters=default --reporters=jest-junit</code></div>
+    <div class="cmd"><code>npx vitest run --reporter=junit --outputFile=reports/junit.xml</code></div>
+  </div>
+</section>
+
+<!-- PYTHON -->
+<section id="python">
+  <h2>6. Detail — Python</h2>
+  <p class="section-lead">pip/poetry/uv ecosystem; runners with automatic discovery and native JUnit XML reports.</p>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>6.1 Pytest + Requests / httpx</h3>
+      <div class="tags"><span class="tag lang">Python 3.9+</span><span class="tag">MIT (pytest) · Apache 2.0 (requests) · BSD (httpx)</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>5</b></span><span>Maintainability <b>5</b></span><span>OO <b>4</b></span><span>Learning <b>5</b></span><span>Technologies <b>5</b></span><span>Total <b>24</b></span></div>
+    <p>Pytest is the dominant runner in Python and its fixture system (with scopes, composition, and name-based injection) is one of the most elegant precondition management models on the market. Requests provides a ubiquitous synchronous HTTP client; httpx adds async support, HTTP/2, and the ability to test ASGI/WSGI apps in-process (FastAPI, Django, Flask).</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>Composable fixtures + <code>parametrize</code> = maintainability and data-driven without boilerplate.</li>
+        <li>Extensive ecosystem: pytest-xdist (parallel), allure-pytest, jsonschema, pydantic, schemathesis.</li>
+        <li>Minimal curve; native <code>assert</code> syntax with failure introspection.</li>
+        <li>httpx enables testing the app without network (ASGITransport) asynchronously.</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>Typing is optional: without mypy/pyright, model refactors are not guaranteed.</li>
+        <li>No request/response reporting out of the box; added via plugins or logging.</li>
+        <li>Flexibility demands structural conventions (clients, factories, conftest by layer).</li>
+      </ul></div>
+    </div>
+    <h4>Example — Simple GET (session-scoped fixtures)</h4>
+<pre><code># tests/conftest.py
+import os, pytest, httpx
+
+@pytest.fixture(scope="session")
+def api() -> httpx.Client:
+    base_url = os.getenv("API_BASE_URL", "https://api.example.com/v1")
+    with httpx.Client(base_url=base_url, headers={"Accept": "application/json"}, timeout=5.0) as client:
+        yield client
+
+# tests/test_users.py
+def test_get_user_by_id(api: httpx.Client):
+    response = api.get("/users/42")
+    assert response.status_code == 200
+    assert "application/json" in response.headers["content-type"]
+    body = response.json()
+    assert body["id"] == 42
+    assert "@" in body["email"]
+    assert response.elapsed.total_seconds() &lt; 1.5</code></pre>
+    <h4>Execution</h4>
+    <div class="cmd"><code>pip install pytest httpx &amp;&amp; pytest tests/ -n auto --junitxml=reports/junit.xml</code></div>
+    <div class="cmd"><code>uv run pytest -m smoke --html=reports/report.html</code></div>
+  </div>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>6.2 Robot Framework + RequestsLibrary</h3>
+      <div class="tags"><span class="tag lang">Keyword-driven (Python)</span><span class="tag">Apache 2.0</span><span class="tag">Python 3.8+</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>4</b></span><span>Maintainability <b>3</b></span><span>OO <b>2</b></span><span>Learning <b>4</b></span><span>Technologies <b>3</b></span><span>Total <b>16</b></span></div>
+    <p>Generic automation framework based on keywords with tabular plain-text syntax. RequestsLibrary wraps Requests exposing keywords such as <code>GET On Session</code> and <code>Status Should Be</code>. Popular in organizations with non-programmer QA profiles and in regulated industries for its traceability and detailed HTML/XML reports.</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>Readable by non-technical profiles; test cases read like procedures.</li>
+        <li>Very complete log.html/output.xml reports by default.</li>
+        <li>User keywords and custom Python libraries allow extending capabilities.</li>
+        <li>Pabot for parallel execution; standard integration in Jenkins/GitLab.</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>Space-sensitive syntax; no typing or IDE-assisted refactoring.</li>
+        <li>Complex logic is verbose and fragile in Robot; ends up migrating to Python.</li>
+        <li>OO patterns only reachable in the underlying Python libraries, not in .robot files.</li>
+        <li>Lower performance than pure pytest on large suites.</li>
+      </ul></div>
+    </div>
+    <h4>Example — Simple GET (users.robot)</h4>
+<pre><code>*** Settings ***
+Library     RequestsLibrary
+Suite Setup    Create Session    api    ${BASE_URL}    headers=&amp;{HEADERS}
+
+*** Variables ***
+${BASE_URL}     https://api.example.com/v1
+&amp;{HEADERS}      Accept=application/json
+
+*** Test Cases ***
+Get User By Id Returns 200
+    ${resp}=    GET On Session    api    /users/42    expected_status=200
+    Should Contain    ${resp.headers}[Content-Type]    application/json
+    ${body}=    Set Variable    ${resp.json()}
+    Should Be Equal As Integers    ${body}[id]    42
+    Should Contain    ${body}[email]    @</code></pre>
+    <h4>Execution</h4>
+    <div class="cmd"><code>pip install robotframework robotframework-requests &amp;&amp; robot --outputdir reports tests/</code></div>
+    <div class="cmd"><code>pabot --processes 4 --outputdir reports tests/</code></div>
+  </div>
+</section>
+
+<!-- .NET -->
+<section id="dotnet">
+  <h2>7. Detail — C# / .NET</h2>
+  <p class="section-lead">dotnet CLI/NuGet ecosystem; <code>dotnet test</code> produces TRX/JUnit and integrates with Azure DevOps, GitHub Actions, and Jenkins.</p>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>7.1 RestSharp</h3>
+      <div class="tags"><span class="tag lang">C# · .NET 6/8+</span><span class="tag">Apache 2.0</span><span class="tag">xUnit / NUnit / MSTest</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>5</b></span><span>Maintainability <b>4</b></span><span>OO <b>5</b></span><span>Learning <b>4</b></span><span>Technologies <b>4</b></span><span>Total <b>22</b></span></div>
+    <p>High-level REST client for .NET with automatic deserialization to POCOs, authenticators (JWT, OAuth2, Basic), swappable serializers (System.Text.Json, Newtonsoft), and a fluent API. Combined with xUnit/NUnit and FluentAssertions, it provides a strongly typed test stack highly suited to OO architecture.</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>C# strong typing: response models as records, safe IDE refactoring.</li>
+        <li>Natural OO patterns: domain-specific clients, request Builders, Factories (Bogus).</li>
+        <li>Full integration with dotnet test, Azure DevOps, and coverlet.</li>
+        <li>Alternative: WebApplicationFactory + HttpClient for in-process ASP.NET Core tests.</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>Breaking API changes in v107+ generated outdated examples online.</li>
+        <li>No built-in JSON Schema validation (use NJsonSchema or JsonSchema.Net).</li>
+        <li>For many teams, the native HttpClient is sufficient and RestSharp is an extra layer.</li>
+      </ul></div>
+    </div>
+    <h4>Example — Simple GET (xUnit + FluentAssertions)</h4>
+<pre><code>using FluentAssertions;
+using RestSharp;
+using Xunit;
+
+public record User(int Id, string Name, string Email);
+
+public class UsersApiTests : IDisposable
+{
+    private readonly RestClient _client = new(new RestClientOptions("https://api.example.com/v1")
+    {
+        MaxTimeout = 5000
+    });
+
+    [Fact]
+    public async Task GetUserById_ReturnsUser()
+    {
+        var request = new RestRequest("users/{id}")
+            .AddUrlSegment("id", 42)
+            .AddHeader("Accept", "application/json");
+
+        var response = await _client.ExecuteGetAsync&lt;User&gt;(request);
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data!.Id.Should().Be(42);
+        response.Data.Email.Should().Contain("@");
+    }
+
+    public void Dispose() => _client.Dispose();
+}</code></pre>
+    <h4>Execution</h4>
+    <div class="cmd"><code>dotnet test --filter "FullyQualifiedName~UsersApiTests" --logger "trx;LogFileName=results.trx"</code></div>
+    <div class="cmd"><code>dotnet test --logger "junit;LogFilePath=reports/junit.xml"   # JunitXml.TestLogger</code></div>
+  </div>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>7.2 SpecFlow + RestSharp <span style="font-size:13px;font-weight:400;color:var(--gray-500)">(successor: Reqnroll)</span></h3>
+      <div class="tags"><span class="tag lang">Gherkin + C#</span><span class="tag">BSD-3</span><span class="tag">.NET 6/8+</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>4</b></span><span>Maintainability <b>4</b></span><span>OO <b>4</b></span><span>Learning <b>3</b></span><span>Technologies <b>3</b></span><span>Total <b>18</b></span></div>
+    <p>SpecFlow was for years the Cucumber port for .NET. Tricentis discontinued it in late 2024 and the community continued the project as <strong>Reqnroll</strong> (compatible fork; nearly mechanical migration). Bindings in C# use RestSharp or HttpClient with dependency injection via scenario context. New projects should start with Reqnroll.</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>Business-readable scenarios with typed C# bindings.</li>
+        <li>Context Injection facilitates Service Objects and clean shared state.</li>
+        <li>Integration with Visual Studio/Rider, LivingDoc, and Azure DevOps.</li>
+        <li>Reqnroll keeps the ecosystem active for .NET 8/9.</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>Uncertainty generated by SpecFlow's discontinuation; fragmented docs.</li>
+        <li>Dual feature/binding maintenance, same as Cucumber.</li>
+        <li>Code generation at build time adds friction and compile times.</li>
+      </ul></div>
+    </div>
+    <h4>Execution</h4>
+    <div class="cmd"><code>dotnet test --filter "Category=smoke" --logger trx</code></div>
+    <div class="cmd"><code>livingdoc test-assembly bin/Debug/net8.0/Api.Specs.dll -t TestExecution.json</code></div>
+  </div>
+</section>
+
+<!-- RUBY -->
+<section id="ruby">
+  <h2>8. Detail — Ruby</h2>
+  <p class="section-lead">Bundler/RubyGems ecosystem; RSpec with JUnit formatters for CI.</p>
+
+  <div class="card fw">
+    <div class="fw-head">
+      <h3>8.1 RSpec + Faraday / HTTParty</h3>
+      <div class="tags"><span class="tag lang">Ruby 3.x</span><span class="tag">MIT</span><span class="tag">Bundler</span></div>
+    </div>
+    <div class="scoreline"><span>CI/CD <b>4</b></span><span>Maintainability <b>4</b></span><span>OO <b>4</b></span><span>Learning <b>4</b></span><span>Technologies <b>3</b></span><span>Total <b>19</b></span></div>
+    <p>RSpec is the reference BDD-style framework in Ruby, with <code>describe/context/it</code> syntax and expressive matchers. Faraday is an HTTP client with composable middleware (retries, logging, JSON parsing, authentication); HTTParty offers a simpler mixin-oriented API. In Rails projects it pairs with <code>rack-test</code> for in-process request specs.</p>
+    <div class="two-col">
+      <div><h4>Strengths</h4><ul class="pros">
+        <li>Very readable syntax; <code>let</code>, <code>subject</code> and <code>shared_examples</code> facilitate reuse.</li>
+        <li>Faraday middleware enables Strategy/Decorator patterns for auth, logging and retries.</li>
+        <li>Ruby is pure OO: domain-specific clients with inheritance and mixins are idiomatic.</li>
+        <li>VCR/WebMock for recording and replaying HTTP responses.</li>
+      </ul></div>
+      <div><h4>Weaknesses</h4><ul class="cons">
+        <li>Smaller community outside the Rails world; less available talent.</li>
+        <li>Dynamic typing without broad Sorbet/RBS adoption: refactors depend on coverage.</li>
+        <li>Parallelism requires additional gems (parallel_tests, turbo_tests).</li>
+        <li>Slower pace of innovation in API testing tooling compared to JS/Python.</li>
+      </ul></div>
+    </div>
+    <h4>Example — Simple GET (RSpec + Faraday)</h4>
+<pre><code># spec/api/users_spec.rb
+require 'faraday'
+require 'json'
+
+RSpec.describe 'GET /users/:id' do
+    let(:conn) do
+        Faraday.new(url: ENV.fetch('API_BASE_URL', 'https://api.example.com/v1')) do |f|
+            f.response :json, content_type: /\bjson$/
+            f.headers['Accept'] = 'application/json'
+            f.options.timeout = 5
+        end
+    end
+
+    subject(:response) { conn.get('/users/42') }
+
+    it 'returns the user' do
+        expect(response.status).to eq(200)
+        expect(response.body).to include('id' => 42)
+        expect(response.body['email']).to include('@')
+    end
+end</code></pre>
+    <h4>Execution</h4>
+    <div class="cmd"><code>bundle exec rspec spec/api --format progress --format RspecJunitFormatter --out reports/junit.xml</code></div>
+    <div class="cmd"><code>bundle exec parallel_rspec spec/api</code></div>
+  </div>
+</section>
+
+<!-- RECOMMENDATION -->
+<section id="recommendation">
+  <h2>9. Final Recommendation by Team Profile</h2>
+  <p class="section-lead">The optimal choice depends on the dominant language, team composition, and need for business-oriented reporting.</p>
+  <div class="reco-grid">
+    <div class="reco">
+      <h3>Java Enterprise Team</h3>
+      <div class="pick">REST Assured + JUnit 5 · Serenity BDD for living docs</div>
+      <ul>
+        <li>REST Assured integrates without friction into existing Maven/Gradle pipelines and supports Specification, Builder and Factory patterns in pure Java.</li>
+        <li>Add Serenity BDD when stakeholders require reports by requirement or when the suite combines API + UI.</li>
+        <li>Use Spring Boot Test for in-process tests of your own microservices; REST Assured for black-box testing.</li>
+        <li>Karate DSL as an alternative if the QA team does not code in Java and needs immediate autonomy.</li>
+      </ul>
+    </div>
+    <div class="reco">
+      <h3>JavaScript/TypeScript Fullstack Team</h3>
+      <div class="pick">Playwright (API testing) · SuperTest for in-process integration</div>
+      <ul>
+        <li>Playwright unifies API + UI in a single runner with parallelism, retries, traces and HTML reports; its typed fixtures support Service Objects.</li>
+        <li>SuperTest (with Jest or Vitest) for testing the Node app directly without deployment, in the same backend repository.</li>
+        <li>Avoid Cypress for API at scale; reserve it for smoke tests if it is already the team's UI standard.</li>
+        <li>Postman/Newman for exploration and documentation, not as the main suite.</li>
+      </ul>
+    </div>
+    <div class="reco">
+      <h3>Python Data/Backend Team</h3>
+      <div class="pick">Pytest + httpx with pydantic and jsonschema</div>
+      <ul>
+        <li>Highest overall score: composable fixtures, native parameterization and plugin ecosystem (xdist, allure, html).</li>
+        <li>httpx enables testing FastAPI/Django/Flask in-process (ASGITransport) and asynchronously.</li>
+        <li>Validate responses with pydantic models for typing and safe refactoring.</li>
+        <li>Robot Framework only if there is a QA team without a programmer profile that values its standard report.</li>
+      </ul>
+    </div>
+    <div class="reco">
+      <h3>.NET Team</h3>
+      <div class="pick">xUnit + RestSharp + FluentAssertions · Reqnroll for BDD</div>
+      <ul>
+        <li>C# typed with records for response models; domain-specific clients and Builders are idiomatic.</li>
+        <li>For ASP.NET Core, complement with WebApplicationFactory for in-process tests without deployment.</li>
+        <li>Start new BDD projects with Reqnroll (community successor to SpecFlow) and migrate existing ones.</li>
+        <li>Direct integration with Azure DevOps via <code>dotnet test --logger trx</code>.</li>
+      </ul>
+    </div>
+    <div class="reco">
+      <h3>Mixed / Language-Agnostic Teams</h3>
+      <div class="pick">Karate DSL (main suite) · Postman/Newman (exploration and smoke)</div>
+      <ul>
+        <li>Karate eliminates language dependency: the DSL is the same for everyone and requires no glue code. Only requires a JVM in CI.</li>
+        <li>Allows QA, backend and frontend contributors to use the same syntax, with self-contained HTML reports.</li>
+        <li>Postman/Newman for discovery, living documentation and quick post-deploy smoke tests.</li>
+        <li>If the team evolves toward a dominant language, progressively migrate to the native library to recover maintainability and OO.</li>
+      </ul>
+    </div>
+    <div class="reco">
+      <h3>Cross-Cutting Principles</h3>
+      <div class="pick">Applicable to any choice</div>
+      <ul>
+        <li>API tests should live in the same repository and pipeline as the service they validate.</li>
+        <li>Separate layers: HTTP client (Service Object) → test data (Factory/Builder) → assertions (test). No literal URLs inside a test.</li>
+        <li>Always publish JUnit XML and an HTML report as CI artifacts; configure parallelism from day one.</li>
+        <li>Complement with contract testing (Pact, Spring Cloud Contract) when there are multiple consumers.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div><strong>REST Test Automation Frameworks Comparison</strong> · Technical Report v1.0 · 2026-09-08</div>
+    <div>Scores based on qualitative evaluation of official documentation, ecosystem maturity, and implementation experience. Scale 1–5 per criterion, maximum 25 points.</div>
+  </div>
+</footer>
+
+</body>
+</html>
