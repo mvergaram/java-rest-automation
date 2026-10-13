@@ -12,4 +12,4 @@ directives only (e.g. `@imports`, `/init` behavior).
 
 If `/init` is run again in this repository, it must update AGENTS.md directly with any new
 codebase documentation it generates — do not expand this file. CLAUDE.md only exists to
-point Claude Code at AGENTS.md.
+point Claude Code at AGENTS.md and list @imports .
