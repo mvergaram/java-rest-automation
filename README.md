@@ -59,8 +59,10 @@ runs since it needs no credentials.
 
 ## Configuration
 
-Copy `.env.example` and set the required values as real environment variables (never commit
-real secrets):
+Copy `.env.example` to `.env` at the project root and fill in the values — `TestConfig`
+loads `.env` automatically, no shell export needed (`.env` is git-ignored; never commit
+real secrets). A real environment variable still overrides `.env` when both are set, which
+is what CI and one-off runs use instead of a file.
 
 - `PRESIGN_BASE_URL` — base URL of the in-house presign endpoint
 - `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_SERVICE_SID` — Twilio credentials
@@ -73,12 +75,12 @@ real secrets):
 pom.xml / build.gradle         Build definitions (Maven / Gradle), same dependencies
 mvnw, mvnw.cmd, .mvn/          Maven Wrapper
 gradlew, gradlew.bat, gradle/  Gradle Wrapper
-.env.example                   Template for required environment variables
+.env.example                   Template for .env — copy to .env (git-ignored), loaded automatically
 AGENTS.md                      Source of truth: conventions, commands, architecture decisions
 CLAUDE.md / CLAUDE.local.md    Claude Code–specific pointers / local session notes (not shared)
 
 src/test/java/com/twilio/automation/
-├── config/     TestConfig (env vars + defaults), MediaMode
+├── config/     TestConfig (env var > .env > config.properties), DotenvLoader, MediaMode
 ├── http/       ApiClients — reusable RequestSpecifications (presign, Twilio Intelligence)
 ├── signature/  TwilioSignature (X-Twilio-Signature) + its unit test
 ├── media/      MediaResolver — resolves an audio fixture into a media_url

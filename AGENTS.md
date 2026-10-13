@@ -20,8 +20,10 @@ a configurable list of audio fixtures.
 - Assertions use AssertJ (`assertThat(...)`), except JSON Schema checks, which use REST
   Assured's own `matchesJsonSchemaInClasspath(...)` matcher.
 - Never hardcode secrets or environment-specific URLs. Everything configurable goes through
-  `config.TestConfig`, which reads environment variables first and falls back to
-  `src/test/resources/config.properties` only for non-secret defaults (see `.env.example`).
+  `config.TestConfig`, resolved as: a real environment variable, then a value from a `.env`
+  file at the project root (loaded automatically by `config.DotenvLoader`, no shell export
+  needed), then — for non-secret settings only — a default from
+  `src/test/resources/config.properties` (see `.env.example`).
 - Test method names describe behavior, not implementation (e.g.
   `transcriptPipelineCompletesForAudioFixture`, never `test1`).
 - New HTTP calls to the presign or Twilio Intelligence APIs go through `http.ApiClients` —
@@ -64,15 +66,22 @@ $env:VERBOSE_HTTP_LOGS="true"; mvnw.cmd test
 $env:VERBOSE_HTTP_LOGS="true"; gradlew.bat test
 ```
 
-Without `PRESIGN_BASE_URL`/`TWILIO_ACCOUNT_SID`/`TWILIO_AUTH_TOKEN`/`TWILIO_SERVICE_SID` set,
-`TranscriptE2ETest` skips itself cleanly via a `@BeforeAll` assumption — it does not fail and
-makes no network calls. `TwilioSignatureTest` always runs; it needs no credentials.
+No shell export is required: copy `.env.example` to `.env` at the project root and fill it
+in — `config.TestConfig` loads it automatically. Without `PRESIGN_BASE_URL`/
+`TWILIO_ACCOUNT_SID`/`TWILIO_AUTH_TOKEN`/`TWILIO_SERVICE_SID` set (via `.env` or a real
+environment variable), `TranscriptE2ETest` skips itself cleanly via a `@BeforeAll`
+assumption — it does not fail and makes no network calls. `TwilioSignatureTest` always runs;
+it needs no credentials.
 
 ## Architecture decisions
 
-- `config.TestConfig` / `config.MediaMode` — single entry point for configuration.
-  Environment variables always win over `config.properties`; `isFullyConfigured()` gates the
-  whole E2E suite so it skips instead of failing when secrets are absent.
+- `config.TestConfig` / `config.MediaMode` / `config.DotenvLoader` — single entry point for
+  configuration, resolved as real env var > `.env` file (parsed by the dependency-free
+  `DotenvLoader`, project root, git-ignored) > `config.properties` default.
+  `isFullyConfigured()` gates the whole E2E suite so it skips instead of failing when
+  secrets are absent anywhere in that chain. The precedence check itself is a pure function
+  (`TestConfig.resolveValue(key, env, dotenv)`), tested directly in `TestConfigTest` without
+  needing to mutate the real environment.
 - `http.ApiClients` — two `RequestSpecification`s: `presign()` (in-house endpoint) and
   `intelligence()` (Basic Auth against `intelligence.twilio.com`). Both log only on
   assertion failure unless `VERBOSE_HTTP_LOGS=true`.

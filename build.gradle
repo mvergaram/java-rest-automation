@@ -52,6 +52,9 @@ tasks.withType(JavaCompile).configureEach {
 
 test {
     useJUnitPlatform()
+    // .env isn't tracked by default — without this, Gradle can mark `test` UP-TO-DATE and
+    // skip re-running the suite after editing .env, since Maven/Surefire has no such caching.
+    inputs.file(file('.env')).optional().withPathSensitivity(PathSensitivity.RELATIVE)
     // Loosens JDK 21+ module reflection so Groovy/Jackson (bundled by rest-assured 4.1.x) can operate.
     jvmArgs += [
         '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
