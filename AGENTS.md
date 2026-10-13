@@ -95,10 +95,17 @@ makes no network calls. `TwilioSignatureTest` always runs; it needs no credentia
 - `src/test/resources/schemas/operator-results-schema.json` — JSON Schema for
   `OperatorResults`. It is a reasonable hypothesis (Twilio's standard list-resource shape),
   not captured from a real response — adjust it once you have one.
-- Both `pom.xml` and `build.gradle` compile at release level 21 and pin Groovy 2.5.23 /
-  Hamcrest 2.2, because REST Assured 4.1.2 (2019) bundles Groovy 2.5.x, which cannot run
-  directly against newer JDK bytecode levels. This has been verified to run on JDK 26 with
-  this configuration — see the comments in both build files before changing those pins.
+- Both `pom.xml` and `build.gradle` compile at release level **17** (the minimum LTS that
+  supports records and switch expressions, the newest language features this project uses)
+  and pin Groovy 2.5.23 / Hamcrest 2.2, because REST Assured 4.1.2 (2019) bundles Groovy
+  2.5.x, which cannot run directly against newer JDK bytecode levels. **Minimum supported
+  JDK is 17** — `javac --release N` can never target a release newer than its own version,
+  so pinning higher than the code's actual minimum breaks every JDK below that pin for no
+  benefit. This was originally pinned at 21 (picked without checking the real minimum) and
+  broke `mvnw test` with `release version 21 not supported` on a real JDK 17 machine — fixed
+  by lowering the pin, not by requiring a newer JDK. Verified running on JDK 26 after the
+  fix; pending re-confirmation on the JDK 17 machine that originally hit the failure — see
+  the comments in both build files before changing those pins.
 - The `X-Twilio-Signature` algorithm is Twilio's own inbound-webhook validation scheme,
   reused here to sign an *outbound* call to the in-house presign endpoint. This assumes that
   endpoint expects the same convention — confirm the exact contract (param names, query vs.

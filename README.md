@@ -8,7 +8,7 @@ over a configurable list of audio fixtures.
 
 | Concern              | Choice                                                            |
 |-----------------------|-------------------------------------------------------------------|
-| Language / runtime     | Java, compiled at `--release 21` (verified running on JDK 26)    |
+| Language / runtime     | Java, compiled at `--release 17` (requires **JDK 17+**; verified running on JDK 26) |
 | HTTP / test DSL        | REST Assured `4.1.2` (`given/when/then`)                          |
 | JSON Schema validation | REST Assured `json-schema-validator` `4.1.2`                      |
 | Test engine            | JUnit 5 (Jupiter), `@ParameterizedTest` + `@MethodSource`          |
@@ -23,6 +23,10 @@ Build tool versions are pinned in the wrappers themselves: Maven `3.9.9`
 (`gradle/wrapper/gradle-wrapper.properties`) — both confirmed to run on JDK 26.
 
 No local Maven or Gradle installation is required; use the wrapper scripts below.
+
+**Requirement: JDK 17 or newer.** The build pins `--release 17` — the minimum Java version
+that supports the records and switch expressions used in this codebase. A JDK older than 17
+will fail to compile; any JDK 17+ (including non-LTS versions) works.
 
 ## Commands
 

@@ -41,10 +41,13 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-// Compiles against release 21 using whichever JDK runs Gradle (no toolchain
-// auto-provisioning / download needed) — same compatibility strategy as pom.xml.
+// Compiles against release 17 using whichever JDK runs Gradle (no toolchain
+// auto-provisioning / download needed). 17 is the minimum LTS that supports records and
+// switch expressions (the newest language features this project uses) — pinning any higher
+// would compile fine here but break on any JDK below that pin, since javac can never target
+// a release newer than its own version. Same compatibility strategy as pom.xml.
 tasks.withType(JavaCompile).configureEach {
-    options.release = 21
+    options.release = 17
 }
 
 test {

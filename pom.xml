@@ -14,7 +14,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>21</maven.compiler.release>
+    <maven.compiler.release>17</maven.compiler.release>
 
     <rest-assured.version>4.1.2</rest-assured.version>
     <junit.version>5.10.3</junit.version>
@@ -32,9 +32,13 @@
   </properties>
 
   <!--
-    rest-assured 4.1.2 (2019) pulls in Groovy 2.5.x, which predates JDK 21+ by several years.
-    These pinned versions replace older transitive ones so the suite can run on a modern JDK,
-    compiled with release level 21 (see AGENTS.md for the full compatibility rationale).
+    rest-assured 4.1.2 (2019) pulls in Groovy 2.5.x, which predates modern JDKs by several
+    years. These pinned versions replace older transitive ones so the suite stays portable.
+    Release level is pinned at 17 (the minimum the code actually needs: records and switch
+    expressions require Java 16+) rather than something higher — a higher pin would compile
+    fine on a newer JDK but break on any JDK below it, since javac can never target a release
+    newer than its own version. Verified running on JDK 26; targeting 17 is what makes it
+    also work on a plain JDK 17 install (see AGENTS.md for the full compatibility rationale).
   -->
   <dependencyManagement>
     <dependencies>
